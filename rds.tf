@@ -4,7 +4,7 @@ resource "aws_db_instance" "default" {
   engine                 = "mysql"
   engine_version         = var.mysql_engine_version
   instance_class         = var.mysql_instance_class
-  name                   = var.mysql_name
+  db_name                = var.mysql_name
   username               = var.mysql_username
   password               = random_password.mysql_password.result
   db_subnet_group_name   = aws_db_subnet_group.default.name

@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "4.40.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.4.3"
+    }
   }
   required_version = ">= 1.1.0"
   backend "remote" {
@@ -24,4 +28,14 @@ provider "aws" {
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/eggs-projects-${var.project_name}-role"
     session_name = "Session_GitHub_Actions"
   }
+
+  default_tags {
+    tags = {
+      Owner = "eggs-projects-${var.project_name}"
+    }
+  }
+}
+
+provider "random" {
+  # Configuration options
 }
