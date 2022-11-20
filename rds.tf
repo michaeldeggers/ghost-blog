@@ -15,6 +15,11 @@ resource "aws_db_instance" "default" {
   db_subnet_group_name      = aws_db_subnet_group.default.name
   vpc_security_group_ids    = [aws_security_group.mysql_sg.id]
   final_snapshot_identifier = "${var.mysql_name}-${local.timestamp_sanitized}"
+
+  timeouts {
+    create = "60m"
+    delete = "2h"
+  }
 }
 
 resource "random_password" "mysql_password" {
