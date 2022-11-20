@@ -68,13 +68,9 @@ variable "mysql_name" {
 }
 
 variable "mysql_username" {
-  type    = string
-  default = "admin"
-}
-
-variable "mysql_password" {
-  type    = string
-  default = "{your_really_good_password}"
+  type      = string
+  sensitive = true
+  default   = "ghostdbuser"
 }
 
 variable "mysql_parameter_group_name" {
