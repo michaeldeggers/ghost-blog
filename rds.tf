@@ -6,7 +6,7 @@ resource "aws_db_instance" "default" {
   instance_class         = var.mysql_instance_class
   name                   = var.mysql_name
   username               = var.mysql_username
-  password               = random_password.mysql_password
+  password               = random_password.mysql_password.result
   db_subnet_group_name   = aws_db_subnet_group.default.name
   parameter_group_name   = var.mysql_parameter_group_name
   vpc_security_group_ids = [aws_security_group.mysql_sg.id]
