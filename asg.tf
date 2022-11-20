@@ -15,7 +15,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_launch_configuration" "ghost_lc" {
-  name_prefix     = "ghost-lc"
+  name_prefix     = "${local.name_prefix}-lc"
   image_id        = data.aws_ami.ubuntu.image_id
   security_groups = [aws_security_group.ghost_asg_sg.id]
   instance_type   = var.ec2_instance_type
@@ -26,7 +26,7 @@ resource "aws_launch_configuration" "ghost_lc" {
 }
 
 resource "aws_autoscaling_group" "ghost_asg" {
-  name                 = "ghost-asg"
+  name                 = "${local.name_prefix}-asg"
   launch_configuration = aws_launch_configuration.ghost_lc.name
   max_size             = var.asg_max_size
   min_size             = var.asg_min_size
@@ -41,7 +41,7 @@ resource "aws_autoscaling_group" "ghost_asg" {
 }
 
 resource "aws_security_group" "ghost_asg_sg" {
-  name        = "ghost-asg-sg"
+  name        = "${local.name_prefix}-asg-sg"
   description = "Security group for the ghost instances"
   vpc_id      = module.vpc.vpc_id
 
@@ -63,6 +63,6 @@ resource "aws_security_group" "ghost_asg_sg" {
 
   tags = merge(var.additional_tags,
     {
-      "Name" : "ghost-asg-sg"
+      "Name" : "${local.name_prefix}-asg-sg"
   })
 }

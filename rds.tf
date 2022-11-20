@@ -1,15 +1,20 @@
+locals {
+  timestamp           = timestamp()
+  timestamp_sanitized = replace("${local.timestamp}", "/[- TZ:]/", "")
+}
+
 resource "aws_db_instance" "default" {
-  allocated_storage      = 20
-  storage_type           = "gp2"
-  engine                 = "mysql"
-  engine_version         = var.mysql_engine_version
-  instance_class         = var.mysql_instance_class
-  db_name                = var.mysql_name
-  username               = var.mysql_username
-  password               = random_password.mysql_password.result
-  db_subnet_group_name   = aws_db_subnet_group.default.name
-  parameter_group_name   = var.mysql_parameter_group_name
-  vpc_security_group_ids = [aws_security_group.mysql_sg.id]
+  allocated_storage         = 20
+  storage_type              = "gp2"
+  engine                    = "mysql"
+  engine_version            = var.mysql_engine_version
+  instance_class            = var.mysql_instance_class
+  db_name                   = var.mysql_name
+  username                  = var.mysql_username
+  password                  = random_password.mysql_password.result
+  db_subnet_group_name      = aws_db_subnet_group.default.name
+  vpc_security_group_ids    = [aws_security_group.mysql_sg.id]
+  final_snapshot_identifier = "${var.mysql_name}-${local.timestamp_sanitized}"
 }
 
 resource "random_password" "mysql_password" {
@@ -19,17 +24,17 @@ resource "random_password" "mysql_password" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  name       = "main"
+  name       = "${local.name_prefix}-main"
   subnet_ids = [module.vpc.database_subnets[0], module.vpc.database_subnets[1]]
 
   tags = merge(var.additional_tags,
     {
-      "Name" = "mysql-subnet-group"
+      "Name" = "${local.name_prefix}-mysql-subnet-group"
   })
 }
 
 resource "aws_security_group" "mysql_sg" {
-  name        = "mysql_sg"
+  name        = "${local.name_prefix}-mysql_sg"
   description = "mysql_sg"
   vpc_id      = module.vpc.vpc_id
 
@@ -50,6 +55,6 @@ resource "aws_security_group" "mysql_sg" {
 
   tags = merge(var.additional_tags,
     {
-      "Name" = "mysql-subnet-group"
+      "Name" = "${local.name_prefix}-mysql-subnet-group"
   })
 }
