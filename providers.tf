@@ -24,4 +24,10 @@ provider "aws" {
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/eggs-projects-${var.project_name}-role"
     session_name = "Session_GitHub_Actions"
   }
+
+  default_tags {
+    tags = {
+      Owner = "eggs-projects-${var.project_name}"
+    }
+  }
 }
