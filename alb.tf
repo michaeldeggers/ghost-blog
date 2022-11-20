@@ -1,12 +1,12 @@
 resource "aws_lb" "ghost_alb" {
-  name               = "ghost-alb"
+  name               = "${local.name_prefix}-alb"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ghost_lb_sg.id]
   subnets            = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
 
   tags = merge(var.additional_tags,
     {
-      "Name" = "ghost-alb"
+      "Name" = "${local.name_prefix}-alb"
   })
 }
 
@@ -23,7 +23,7 @@ resource "aws_lb_listener" "ghost_lb_listener" {
 
 
 resource "aws_lb_target_group" "ghost_lb_tg" {
-  name                 = "ghost-tg"
+  name                 = "${local.name_prefix}-tg"
   port                 = 80
   protocol             = "HTTP"
   deregistration_delay = 180
@@ -36,12 +36,12 @@ resource "aws_lb_target_group" "ghost_lb_tg" {
 
   tags = merge(var.additional_tags,
     {
-      "Name" = "ghost-alb"
+      "Name" = "${local.name_prefix}-alb"
   })
 }
 
 resource "aws_security_group" "ghost_lb_sg" {
-  name   = "ghost-sg-alb"
+  name   = "${local.name_prefix}-sg-alb"
   vpc_id = module.vpc.vpc_id
 
   # Accept http traffic from the internet
@@ -61,6 +61,6 @@ resource "aws_security_group" "ghost_lb_sg" {
 
   tags = merge(var.additional_tags,
     {
-      "Name" = "ghost-alb-sg"
+      "Name" = "${local.name_prefix}-alb-sg"
   })
 }

@@ -19,13 +19,6 @@ variable "additional_tags" {
   type        = map(string)
 }
 
-# VPC Vars
-variable "vpc_name" {
-  description = "VPC name"
-  type        = string
-  default     = "ghost_vpc"
-}
-
 variable "vpc_cidr" {
   description = "VPC CIDR range"
   type        = string
@@ -71,11 +64,6 @@ variable "mysql_username" {
   type      = string
   sensitive = true
   default   = "ghostdbuser"
-}
-
-variable "mysql_parameter_group_name" {
-  type    = string
-  default = "default.mysql8.0"
 }
 
 # ASG Variables

@@ -31,7 +31,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Owner = "eggs-projects-${var.project_name}"
+      Owner = "${var.organization}-${var.project_name}"
     }
   }
 }
