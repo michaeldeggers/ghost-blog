@@ -70,8 +70,8 @@ resource "aws_route53_record" "blog" {
   name    = "blog.${var.route53_hosted_zone_name}"
   type    = "A"
   alias {
-    name                   = aws_alb.ghost_alb.dns_name
-    zone_id                = aws_alb.ghost_alb.zone_id
+    name                   = aws_lb.ghost_alb.dns_name
+    zone_id                = aws_lb.ghost_alb.zone_id
     evaluate_target_health = true
   }
 }
@@ -81,8 +81,8 @@ resource "aws_route53_record" "admin" {
   name    = "admin.${var.route53_hosted_zone_name}"
   type    = "A"
   alias {
-    name                   = aws_alb.ghost_alb.dns_name
-    zone_id                = aws_alb.ghost_alb.zone_id
+    name                   = aws_lb.ghost_alb.dns_name
+    zone_id                = aws_lb.ghost_alb.zone_id
     evaluate_target_health = true
   }
 }
