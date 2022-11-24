@@ -15,21 +15,22 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_launch_configuration" "ghost_lc" {
-  name_prefix     = "${local.name_prefix}-lc"
-  image_id        = data.aws_ami.ubuntu.image_id
-  security_groups = [aws_security_group.ghost_asg_sg.id]
-  instance_type   = var.ec2_instance_type
+  name_prefix                 = "${local.name_prefix}-lc"
+  image_id                    = data.aws_ami.ubuntu.image_id
+  security_groups             = [aws_security_group.ghost_asg_sg.id]
+  instance_type               = var.ec2_instance_type
+  user_data_replace_on_change = true
 
   # path to the user data file
   user_data = templatefile("${path.module}/user_data/ghost_init.sh",
     {
       # This is pulled from the rds resource created in rds.tf
-      "endpoint" = aws_db_instance.default.address,
-      "database" = aws_db_instance.default.name,
-      "username" = aws_db_instance.default.username,
+      "endpoint"  = aws_db_instance.default.address,
+      "database"  = aws_db_instance.default.name,
+      "username"  = aws_db_instance.default.username,
       "password"  = random_password.mysql_password.result,
-      "admin_url" = var.website_admin_url,
-      "url"       = var.website_url
+      "admin_url" = "admin.${aws_lb.ghost_alb.dns_name}/admin",
+      "url"       = aws_lb.ghost_alb.dns_name
     }
   )
 
