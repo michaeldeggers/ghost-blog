@@ -64,3 +64,25 @@ resource "aws_security_group" "ghost_lb_sg" {
       "Name" = "${local.name_prefix}-alb-sg"
   })
 }
+
+resource "aws_route53_record" "blog" {
+  zone_id = data.aws_route53_zone.zone.zone_id
+  name    = "blog.${var.route53_hosted_zone_name}"
+  type    = "A"
+  alias {
+    name                   = aws_lb.ghost_alb.dns_name
+    zone_id                = aws_lb.ghost_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "admin" {
+  zone_id = data.aws_route53_zone.zone.zone_id
+  name    = "admin.${var.route53_hosted_zone_name}"
+  type    = "A"
+  alias {
+    name                   = aws_lb.ghost_alb.dns_name
+    zone_id                = aws_lb.ghost_alb.zone_id
+    evaluate_target_health = true
+  }
+}
