@@ -94,3 +94,9 @@ variable "website_admin_url" {
   type        = string
   default     = ""
 }
+
+variable "route53_hosted_zone_name" {
+  description = "Name of hosted zone for blog"
+  type        = string
+  default     = "mikeeggers.com"
+}
