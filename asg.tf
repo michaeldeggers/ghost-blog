@@ -28,8 +28,8 @@ resource "aws_launch_configuration" "ghost_lc" {
       "database"  = aws_db_instance.default.db_name,
       "username"  = aws_db_instance.default.username,
       "password"  = random_password.mysql_password.result,
-      "admin_url" = "admin.${var.route53_hosted_zone_name}",
-      "url"       = "blog.${var.route53_hosted_zone_name}"
+      "admin_url" = "http://admin.${var.route53_hosted_zone_name}",
+      "url"       = "http://blog.${var.route53_hosted_zone_name}"
     }
   )
 
