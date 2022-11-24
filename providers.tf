@@ -25,7 +25,7 @@ provider "aws" {
   # Configuration options
   region = "us-east-1"
   assume_role {
-    role_arn     = "arn:aws:iam::${var.aws_account_id}:role/eggs-projects-${var.project_name}-role"
+    role_arn     = "arn:aws:iam::${var.aws_account_id}:role/eggs-projects-deploy-role"
     session_name = "Session_GitHub_Actions"
   }
 
