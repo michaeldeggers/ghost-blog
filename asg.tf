@@ -19,6 +19,7 @@ resource "aws_launch_configuration" "ghost_lc" {
   image_id        = data.aws_ami.ubuntu.image_id
   security_groups = [aws_security_group.ghost_asg_sg.id]
   instance_type   = var.ec2_instance_type
+  key_name        = aws_key_pair.ghost.key_name
 
   # path to the user data file
   user_data = templatefile("${path.module}/user_data/ghost_init.sh",
@@ -28,8 +29,8 @@ resource "aws_launch_configuration" "ghost_lc" {
       "database"  = aws_db_instance.default.db_name,
       "username"  = aws_db_instance.default.username,
       "password"  = random_password.mysql_password.result,
-      "admin_url" = "http://admin.${var.route53_hosted_zone_name}",
-      "url"       = "http://blog.${var.route53_hosted_zone_name}"
+      "admin_url" = "https://admin.${var.route53_hosted_zone_name}",
+      "url"       = "https://blog.${var.route53_hosted_zone_name}"
     }
   )
 
@@ -39,7 +40,7 @@ resource "aws_launch_configuration" "ghost_lc" {
 }
 
 resource "aws_autoscaling_group" "ghost_asg" {
-  name                 = "${local.name_prefix}-asg"
+  name                 = "${aws_launch_configuration.ghost_lc.name}-asg"
   launch_configuration = aws_launch_configuration.ghost_lc.name
   max_size             = var.asg_max_size
   min_size             = var.asg_min_size
@@ -60,8 +61,8 @@ resource "aws_security_group" "ghost_asg_sg" {
 
   ingress {
     description = "Ingress rule for http"
-    from_port   = 2368 # Ghost default port
-    to_port     = 2368 # Ghost default port
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     # Security group that will be used by the ALB, see alb.tf
     security_groups = [aws_security_group.ghost_lb_sg.id]
