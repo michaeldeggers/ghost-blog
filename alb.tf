@@ -21,9 +21,21 @@ resource "aws_lb_listener" "ghost_lb_listener" {
   }
 }
 
+resource "aws_lb_listener" "ghost_lb_listener_https" {
+  load_balancer_arn = aws_lb.ghost_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = data.aws_acm_certificate.amazon_issued.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ghost_lb_tg.arn
+  }
+}
+
 
 resource "aws_lb_target_group" "ghost_lb_tg" {
-  name                 = "${local.name_prefix}-tg"
+  name_prefix          = substr("${var.project_name}", 0, 6)
   port                 = 80
   protocol             = "HTTP"
   deregistration_delay = 180
@@ -43,6 +55,14 @@ resource "aws_lb_target_group" "ghost_lb_tg" {
 resource "aws_security_group" "ghost_lb_sg" {
   name   = "${local.name_prefix}-sg-alb"
   vpc_id = module.vpc.vpc_id
+
+  # Accept http traffic from the internet
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # Accept http traffic from the internet
   ingress {
