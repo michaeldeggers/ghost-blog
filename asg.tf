@@ -39,7 +39,7 @@ resource "aws_launch_configuration" "ghost_lc" {
 }
 
 resource "aws_autoscaling_group" "ghost_asg" {
-  name                 = "${local.name_prefix}-asg"
+  name                 = "${aws_launch_configuration.ghost_lc.name}-asg"
   launch_configuration = aws_launch_configuration.ghost_lc.name
   max_size             = var.asg_max_size
   min_size             = var.asg_min_size
@@ -62,6 +62,24 @@ resource "aws_security_group" "ghost_asg_sg" {
     description = "Ingress rule for http"
     from_port   = 2368 # Ghost default port
     to_port     = 2368 # Ghost default port
+    protocol    = "tcp"
+    # Security group that will be used by the ALB, see alb.tf
+    security_groups = [aws_security_group.ghost_lb_sg.id]
+  }
+
+  ingress {
+    description = "Ingress rule for http"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    # Security group that will be used by the ALB, see alb.tf
+    security_groups = [aws_security_group.ghost_lb_sg.id]
+  }
+
+  ingress {
+    description = "Ingress rule for http"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     # Security group that will be used by the ALB, see alb.tf
     security_groups = [aws_security_group.ghost_lb_sg.id]
