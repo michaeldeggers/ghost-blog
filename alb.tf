@@ -1,8 +1,9 @@
 resource "aws_lb" "ghost_alb" {
-  name               = "${local.name_prefix}-alb"
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.ghost_lb_sg.id]
-  subnets            = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
+  name                       = "${local.name_prefix}-alb"
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.ghost_lb_sg.id]
+  subnets                    = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
+  drop_invalid_header_fields = true
 
   tags = merge(var.additional_tags,
     {
@@ -48,7 +49,10 @@ resource "aws_lb_target_group" "ghost_lb_tg" {
   health_check {
     healthy_threshold = 3
     interval          = 10
+    path              = "/"
+    matcher           = "200" # has to be HTTP 200 or fails
   }
+
 
   tags = merge(var.additional_tags,
     {
@@ -62,21 +66,15 @@ resource "aws_security_group" "ghost_lb_sg" {
 
   # Accept http traffic from the internet
   ingress {
+    description = "Accept https traffic from the internet"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Accept http traffic from the internet
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
+    description = "Allow communication out to internet"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
