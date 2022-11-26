@@ -1,6 +1,4 @@
 name: "Terraform"
-environment:
-  name: dev
 
 on:
   push:
@@ -15,6 +13,7 @@ jobs:
   terraform:
     name: "Terraform"
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v3

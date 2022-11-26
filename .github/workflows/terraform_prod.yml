@@ -1,6 +1,4 @@
 name: "Terraform - Prod"
-environment:
-  name: prod
 
 on:
   workflow_dispatch:
@@ -12,6 +10,7 @@ jobs:
   terraform:
     name: "Terraform"
     runs-on: ubuntu-latest
+    environment: prod
     steps:
       - name: Checkout
         uses: actions/checkout@v3
