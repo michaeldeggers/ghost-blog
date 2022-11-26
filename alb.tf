@@ -4,6 +4,13 @@ resource "aws_lb" "ghost_alb" {
   security_groups            = [aws_security_group.ghost_lb_sg.id]
   subnets                    = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
   drop_invalid_header_fields = true
+  enable_deletion_protection = true
+  
+  access_logs {
+    bucket  = aws_s3_bucket.lb_logs.bucket
+    prefix  = "log/"
+    enabled = true
+  }
 
   tags = merge(var.additional_tags,
     {
@@ -95,5 +102,54 @@ resource "aws_route53_record" "blog" {
     name                   = aws_lb.ghost_alb.dns_name
     zone_id                = aws_lb.ghost_alb.zone_id
     evaluate_target_health = true
+  }
+}
+
+resource "aws_s3_bucket" "lb_logs" {
+  bucket = "my-tf-test-bucket"
+
+  tags = {
+    Name        = "Ghost-Blog Access Logs"
+    Environment = var.environment
+  }
+}
+
+resource "aws_s3_bucket_acl" "lb_logs" {
+  bucket = aws_s3_bucket.lb_logs.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "lb_logs" {
+  bucket = aws_s3_bucket.lb_logs.bucket
+
+  rule {
+    id = "log"
+
+    expiration {
+      days = 90
+    }
+
+    filter {
+      and {
+        prefix = "log/"
+
+        tags = {
+          rule      = "log"
+          autoclean = "true"
+        }
+      }
+    }
+
+    status = "Enabled"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
   }
 }

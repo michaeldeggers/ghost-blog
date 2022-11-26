@@ -100,3 +100,9 @@ variable "route53_hosted_zone_name" {
   type        = string
   default     = ""
 }
+
+variable "environment" {
+  description = "Deployed Environment"
+  type        = string
+  default     = "dev"
+}
