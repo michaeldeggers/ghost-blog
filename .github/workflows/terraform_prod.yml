@@ -1,7 +1,6 @@
 name: "Terraform - Prod"
 
 on:
-env:
   push:
     branches:
       - main
