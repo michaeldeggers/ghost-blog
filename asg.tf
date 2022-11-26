@@ -28,7 +28,7 @@ resource "aws_launch_configuration" "ghost_lc" {
       "database"  = aws_db_instance.default.db_name,
       "username"  = aws_db_instance.default.username,
       "password"  = random_password.mysql_password.result,
-      "admin_url" = "http://admin.${var.route53_hosted_zone_name}",
+      "admin_url" = "http://blog.${var.route53_hosted_zone_name}", # Different subdomains cause issues
       "url"       = "http://blog.${var.route53_hosted_zone_name}"
     }
   )
@@ -57,24 +57,6 @@ resource "aws_security_group" "ghost_asg_sg" {
   name        = "${local.name_prefix}-asg-sg"
   description = "Security group for the ghost instances"
   vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "Ingress rule for http"
-    from_port   = 2368 # Ghost default port
-    to_port     = 2368 # Ghost default port
-    protocol    = "tcp"
-    # Security group that will be used by the ALB, see alb.tf
-    security_groups = [aws_security_group.ghost_lb_sg.id]
-  }
-
-  ingress {
-    description = "Ingress rule for http"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    # Security group that will be used by the ALB, see alb.tf
-    security_groups = [aws_security_group.ghost_lb_sg.id]
-  }
 
   ingress {
     description = "Ingress rule for http"

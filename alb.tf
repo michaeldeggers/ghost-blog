@@ -16,8 +16,13 @@ resource "aws_lb_listener" "ghost_lb_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.ghost_lb_tg.arn
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -87,17 +92,6 @@ resource "aws_security_group" "ghost_lb_sg" {
 resource "aws_route53_record" "blog" {
   zone_id = data.aws_route53_zone.zone.zone_id
   name    = "blog.${var.route53_hosted_zone_name}"
-  type    = "A"
-  alias {
-    name                   = aws_lb.ghost_alb.dns_name
-    zone_id                = aws_lb.ghost_alb.zone_id
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "admin" {
-  zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "admin.${var.route53_hosted_zone_name}"
   type    = "A"
   alias {
     name                   = aws_lb.ghost_alb.dns_name
