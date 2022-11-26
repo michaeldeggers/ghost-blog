@@ -1,15 +1,12 @@
-name: "Terraform"
+name: "Terraform - Prod"
 environment:
-  name: dev
+  name: prod
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
 
 env:
-  TF_WORKSPACE: ${{ github.event.repository.name }}
+  TF_WORKSPACE: ${{ github.event.repository.name }}_prod
 
 jobs:
   terraform:

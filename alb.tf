@@ -33,7 +33,6 @@ resource "aws_lb_listener" "ghost_lb_listener_https" {
   }
 }
 
-
 resource "aws_lb_target_group" "ghost_lb_tg" {
   name_prefix          = substr("${var.project_name}", 0, 6)
   port                 = 80
