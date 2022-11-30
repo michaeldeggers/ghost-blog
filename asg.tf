@@ -19,6 +19,12 @@ resource "aws_launch_configuration" "ghost_lc" {
   image_id        = data.aws_ami.ubuntu.image_id
   security_groups = [aws_security_group.ghost_asg_sg.id]
   instance_type   = var.ec2_instance_type
+  root_block_device {
+    encrypted = true
+  }
+  metadata_options {
+    http_endpoint = "disabled"
+  }
 
   # path to the user data file
   user_data = templatefile("${path.module}/user_data/ghost_init.sh",
@@ -59,7 +65,7 @@ resource "aws_security_group" "ghost_asg_sg" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description = "Ingress rule for http"
+    description = "Ingress rule for http to service"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -68,6 +74,7 @@ resource "aws_security_group" "ghost_asg_sg" {
   }
 
   egress {
+    description = "Allow communication out to the internet"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
